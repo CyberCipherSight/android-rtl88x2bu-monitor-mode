@@ -35,8 +35,34 @@ USB bind ✅
 managed interface ✅
 monitor mode ✅
 radiotap capture ✅
+boot-persistent module autoload ✅
+hot-plug after reboot ✅
 kernel replacement ❌ not required
 ```
+
+### Persistence milestone
+
+After the driver was stable, it was wrapped in a minimal Magisk module. The final behavior is now:
+
+```text
+Android boots
+   ↓
+Magisk late-start service runs
+   ↓
+88x2bu.ko is loaded once
+   ↓
+USB adapter can be connected later
+   ↓
+rtl88x2bu binds automatically
+   ↓
+wlanX appears in managed mode
+   ↓
+Termux/root tools can switch wlanX to monitor mode on demand
+```
+
+The important design choice is that **the driver autoloads, but monitor mode does not**. That keeps ordinary hot-plug behavior predictable while allowing tools to opt into monitor mode only when needed.
+
+See [`docs/MAGISK-PERSISTENCE.md`](docs/MAGISK-PERSISTENCE.md) and the generic [`magisk-template/`](magisk-template/) skeleton. The compiled `.ko` is intentionally not published because kernel modules are device/kernel specific.
 
 ---
 
@@ -496,9 +522,16 @@ flowchart TD
 ├── docs/
 │   ├── BUILD-AND-DEBUG.md
 │   └── SANITIZATION.md
-└── patches/
-    ├── 0001-cfi-safe-tasklet-callbacks.patch
-    └── 0002-cfi-safe-netdev-xmit-callbacks.patch
+├── patches/
+│   ├── 0001-cfi-safe-tasklet-callbacks.patch
+│   └── 0002-cfi-safe-netdev-xmit-callbacks.patch
+├── magisk-template/
+│   ├── README.md
+│   ├── module.prop
+│   ├── customize.sh
+│   └── service.sh
+└── docs/
+    └── MAGISK-PERSISTENCE.md
 ```
 
 No compiled kernel module, boot image, device backup, crash dump, host path, SSID, IP address, MAC address, account token, or device-specific secret is intentionally included.

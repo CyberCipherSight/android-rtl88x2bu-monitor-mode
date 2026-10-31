@@ -1,0 +1,6 @@
+id=rtl88x2bu_monitor
+name=RTL88x2BU Android Monitor Mode Driver
+version=1.0
+versionCode=1
+author=your-name
+description=Autoloads a compatible RTL88x2BU kernel module after Android boot. Monitor mode remains manual.
