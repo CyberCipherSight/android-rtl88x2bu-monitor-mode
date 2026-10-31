@@ -1,0 +1,78 @@
+diff --git a/core/rtw_xmit.c b/core/rtw_xmit.c
+index 13b46f9..e85652a 100644
+--- a/core/rtw_xmit.c
++++ b/core/rtw_xmit.c
+@@ -4868,7 +4868,7 @@ static void do_queue_select(_adapter	*padapter, struct pkt_attrib *pattrib)
+  *	<0	fail
+  */
+  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 24))
+-s32 rtw_monitor_xmit_entry(struct sk_buff *skb, struct net_device *ndev)
++netdev_tx_t rtw_monitor_xmit_entry(struct sk_buff *skb, struct net_device *ndev)
+ {
+ 	u16 frame_ctl;
+ 	struct ieee80211_radiotap_header rtap_hdr;
+diff --git a/include/rtw_xmit.h b/include/rtw_xmit.h
+index 2f19c9c..d29a840 100644
+--- a/include/rtw_xmit.h
++++ b/include/rtw_xmit.h
+@@ -974,7 +974,7 @@ void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv);
+ void rtw_alloc_hwxmits(_adapter *padapter);
+ void rtw_free_hwxmits(_adapter *padapter);
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 24))
+-s32 rtw_monitor_xmit_entry(struct sk_buff *skb, struct net_device *ndev);
++netdev_tx_t rtw_monitor_xmit_entry(struct sk_buff *skb, struct net_device *ndev);
+ #endif
+ void rtw_xmit_dequeue_callback(_workitem *work);
+ void rtw_xmit_queue_set(struct sta_info *sta);
+diff --git a/include/xmit_osdep.h b/include/xmit_osdep.h
+index 9bf9c93..803970e 100644
+--- a/include/xmit_osdep.h
++++ b/include/xmit_osdep.h
+@@ -68,7 +68,7 @@ struct xmit_frame;
+ struct xmit_buf;
+ 
+ extern int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev);
+-extern int rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev);
++extern netdev_tx_t rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev);
+ 
+ #endif /* PLATFORM_LINUX */
+ 
+diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
+index ddb6a63..f29a2e7 100644
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -4908,7 +4908,7 @@ static int rtw_cfg80211_monitor_if_close(struct net_device *ndev)
+ 	return ret;
+ }
+ 
+-static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_device *ndev)
++static netdev_tx_t rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_device *ndev)
+ {
+ 	int ret = 0;
+ 	int rtap_len;
+diff --git a/os_dep/linux/mlme_linux.c b/os_dep/linux/mlme_linux.c
+index 6fd24e8..5c97086 100644
+--- a/os_dep/linux/mlme_linux.c
++++ b/os_dep/linux/mlme_linux.c
+@@ -290,7 +290,7 @@ void rtw_indicate_sta_disassoc_event(_adapter *padapter, struct sta_info *psta)
+ 
+ #ifdef CONFIG_HOSTAPD_MLME
+ 
+-static int mgnt_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
++static netdev_tx_t mgnt_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
+ {
+ 	struct hostapd_priv *phostapdpriv = rtw_netdev_priv(pnetdev);
+ 	_adapter *padapter = (_adapter *)phostapdpriv->padapter;
+diff --git a/os_dep/linux/xmit_linux.c b/os_dep/linux/xmit_linux.c
+index f4f508e..0ec1098 100644
+--- a/os_dep/linux/xmit_linux.c
++++ b/os_dep/linux/xmit_linux.c
+@@ -514,7 +514,7 @@ fail:
+ }
+ #endif
+ 
+-int rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
++netdev_tx_t rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
+ {
+ 	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
+ 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);

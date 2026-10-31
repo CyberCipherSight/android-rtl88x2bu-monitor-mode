@@ -1,0 +1,51 @@
+# Build outputs
+*.o
+*.ko
+*.mod
+*.mod.c
+*.cmd
+*.symvers
+Module.symvers
+modules.order
+vmlinux
+Image*
+
+# Kernel configs / ABI artifacts
+.config
+.config.old
+abi_symbollist*
+
+# Device / boot backups
+*.img
+*.bin
+*.elf
+*.dtb
+*.dtbo
+backup/
+backups/
+
+# Logs and captures
+*.log
+*.pcap
+*.pcapng
+*ramoops*
+pstore/
+logs/
+
+# Secrets / credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+credentials*
+secrets*
+
+# Editors / OS noise
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
